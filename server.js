@@ -6,6 +6,10 @@ const path = require("path");
 const fs = require("fs");
 
 const app = express();
+app.get("/", (req, res) => {
+  res.send("🧁 Cake Corner web API is running");
+});
+
 app.use(cors());
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
@@ -75,6 +79,20 @@ const upload = multer({ storage });
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
+  if (username === "admin" && password === "admin123") {
+    return res.json({
+      success: true,
+      role: "admin",
+      username
+    });
+  }
+
+  return res.status(401).json({
+    message: "بيانات الدخول غير صحيحة"
+  });
+});
+
+
   db.get(
     "SELECT id, username, role FROM users WHERE username=? AND password=?",
     [username, password],
@@ -87,7 +105,6 @@ app.post("/login", (req, res) => {
 
     }
   );
-});
 
 // --------------------
 // إدارة المستخدمين (Admin)
